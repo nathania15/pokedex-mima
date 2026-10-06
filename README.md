@@ -1,19 +1,42 @@
-# React + Vite
+# PokéDex Mini
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Pokédex built with **React + Vite + React Router**, powered by [PokéAPI](https://pokeapi.co).
 
-Currently, two official plugins are available:
+🔗 **Live demo:** https://<your-username>.github.io/pokedex-mima/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- Browse all 1025 Pokémon with "Load more" pagination
+- Live search by name or number, with autocomplete (Enter jumps to the best match)
+- Filter by type (18 types) and by your favorites
+- Detail page: official artwork, shiny toggle, Pokémon cry, Pokédex entry, height / weight / abilities
+- Animated base-stat bars, evolution chain (including branching ones like Eevee)
+- ★ Favorites saved in `localStorage`
+- 🎲 "Surprise me" random Pokémon, previous / next navigation
+- Dark / light mode, responsive layout, loading skeletons, 404 page
+- Race-condition-safe data fetching (`isCurrent` guard) and error handling on every request
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## Run locally
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
+```bash
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+## Deploy to GitHub Pages
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. In `vite.config.js`, set `base` to `/<your-repo-name>/`
+2. Push the source to GitHub (`git push`)
+3. `npm run deploy` (builds, then publishes `dist/` to the `gh-pages` branch)
+4. GitHub → Settings → Pages → Source: `gh-pages` branch
+
+## Structure
+
+```
+src/
+├── App.jsx / main.jsx
+├── config.js, utils.js, favorites.js
+├── hooks/        usePokemonIndex, usePokemonOfType, useTheme
+├── components/   Layout, SearchForm, PokemonList, PokemonCard, TypeBadge, StatBars, EvolutionChain, PokeballIcon
+└── pages/        ListPage, DetailPage, NotFoundPage
+```

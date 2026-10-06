@@ -1,66 +1,43 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { API_BASE_URL } from "../config.js";
-import { getIdFromUrl, capitalize, getSpriteUrl } from "../utils.js";
+import { useState } from "react";
+import PokemonCard from "./PokemonCard.jsx";
+import { PAGE_SIZE } from "../config.js";
 
-function PokemonList() {
-  const [pokemons, setPokemons] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+// Receives an already-filtered array and shows it page by page.
+// The parent gives this component a `key` that changes with the filters,
+// so "how many are visible" resets automatically.
+function PokemonList({ pokemons }) {
+  const [visible, setVisible] = useState(PAGE_SIZE);
 
-  useEffect(() => {
-    async function loadPokemons() {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch(`${API_BASE_URL}/pokemon?limit=20`);
-
-        if (!response.ok) {
-          throw new Error(`Server responded with status ${response.status}`);
-        }
-
-        const data = await response.json();
-        setPokemons(data.results);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadPokemons();
-  }, []);
-
-  if (isLoading) {
-    return <p className="status">Loading Pokémon…</p>;
+  if (pokemons.length === 0) {
+    return (
+      <div className="status empty">
+        <p className="empty-emoji">🔍</p>
+        <p>No Pokémon match your filters.</p>
+      </div>
+    );
   }
 
-  if (error) {
-    return <p className="status status-error">Couldn't load the list: {error}</p>;
-  }
+  const shown = pokemons.slice(0, visible);
 
   return (
-    <ul className="pokemon-list">
-      {pokemons.map((pokemon) => {
-        const id = getIdFromUrl(pokemon.url);
-        return (
-          <li key={pokemon.name} className="pokemon-list-item">
-            <Link to={`/pokemon/${pokemon.name}`} className="pokemon-link">
-              <img
-                className="pokemon-sprite"
-                src={getSpriteUrl(id)}
-                alt={pokemon.name}
-                width={48}
-                height={48}
-              />
-              <span className="pokemon-id">#{id.padStart(3, "0")}</span>
-              <span className="pokemon-name">{capitalize(pokemon.name)}</span>
-            </Link>
-          </li>
-        );
-      })}
-    </ul>
+    <>
+      <ul className="pokemon-grid">
+        {shown.map((pokemon) => (
+          <PokemonCard key={pokemon.name} pokemon={pokemon} />
+        ))}
+      </ul>
+      {visible < pokemons.length && (
+        <div className="load-more-wrap">
+          <button
+            type="button"
+            className="primary-btn"
+            onClick={() => setVisible((v) => v + PAGE_SIZE)}
+          >
+            Load more ({pokemons.length - visible} left)
+          </button>
+        </div>
+      )}
+    </>
   );
 }
 
